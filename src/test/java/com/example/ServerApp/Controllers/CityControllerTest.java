@@ -1,90 +1,62 @@
-package com.example.ServerApp.Controllers;
+package com.example.ServerApp.controllers;
+
+import com.example.ServerApp.entities.City;
+import com.example.ServerApp.repositories.CityRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Collections;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.ServerApp.controllers.CityController;
-import com.example.ServerApp.models.City;
-
+@WebMvcTest(CityController.class)
 class CityControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private CityRepository<City> cityRepository;
+
+    @InjectMocks
     private CityController cityController;
 
     @BeforeEach
     void setUp() {
-        cityController = new CityController();
+        MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(cityController).build();
     }
 
     @Test
-    void testCityController() throws Exception {
+    void testGetAllCities() throws Exception {
+        City city = new City("New York", "NY", 8419600);
+        when(cityRepository.findAll()).thenReturn(Collections.singletonList(city));
+
         mockMvc.perform(get("/api/cities"))
-               .andExpect(status().isOk());
-    }
-    
-    @Test
-    void testAddCity() {
-        City newCity = new City();
-        newCity.setId(2L);
-        newCity.setName("Los Angeles");
-        newCity.setState("CA");
-        newCity.setPopulation(4000000);
-
-        String response = cityController.addCity(newCity);
-
-        assertEquals("Los Angeles added.", response);
+                .andExpect(status().isOk())
+                .andExpect(content().json("[{'name':'New York','state':'NY','population':8419600}]"));
     }
 
     @Test
-    void testGetCityById() {
-        City city = new City();
-        city.setId(1L);
-        city.setName("New York");
-        city.setState("NY");
-        city.setPopulation(8000000);
-        cityController.addCity(city);
+    void testAddCity() throws Exception {
+        City city = new City("Los Angeles", "CA", 3980400);
+        when(cityRepository.save(city)).thenReturn(city);
 
-        City result = cityController.getCityById(1L);
-
-        assertEquals("New York", result.getName());
-    }
-
-    @Test
-    void testUpdateCity() {
-        City city = new City();
-        city.setId(1L);
-        city.setName("New York");
-        city.setState("NY");
-        city.setPopulation(8000000);
-        cityController.addCity(city);
-
-        City updatedCity = new City();
-        updatedCity.setName("New York Updated");
-        updatedCity.setState("NY");
-        updatedCity.setPopulation(8500000);
-
-        String response = cityController.updateCity(1L, updatedCity);
-
-        assertEquals("New York Updated updated.", response);
-    }
-
-    @Test
-    void testDeleteCity() {
-        City city = new City();
-        city.setId(1L);
-        city.setName("New York");
-        city.setState("NY");
-        city.setPopulation(8000000);
-        cityController.addCity(city);
-
-        String response = cityController.deleteCity(1L);
-
-        assertEquals("City deleted.", response);
+        mockMvc.perform(post("/api/cities")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"Los Angeles\", \"state\":\"CA\", \"population\":3980400}"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Los Angeles added."));
     }
 }

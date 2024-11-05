@@ -1,8 +1,6 @@
 package com.example.ServerApp.entities;
 
-import com.example.ServerApp.models.City;
-
-public class Airport {
+public class Airport<City> {
     private Long id;
     private String name;
     private String code;
