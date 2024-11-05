@@ -1,5 +1,4 @@
 package com.example.ServerApp.entities;
-import com.example.ServerApp.entities.City;
 
 public class Airport<T> {
     private Long id;
