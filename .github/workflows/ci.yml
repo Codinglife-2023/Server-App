@@ -51,4 +51,4 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ServerAppDB
           SPRING_DATASOURCE_USERNAME: myuser
           SPRING_DATASOURCE_PASSWORD: mypassword
-        run: ./mvnw test -Dspring.profiles.active=test
+        run: ./mvnw test -Dspring.profiles.active=test -X

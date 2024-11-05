@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import com.example.ServerApp.repositories.CityRepository;
+import java.util.ArrayList;
 
 import com.example.ServerApp.entities.City;
 
