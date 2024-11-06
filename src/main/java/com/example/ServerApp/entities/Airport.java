@@ -1,6 +1,6 @@
 package com.example.ServerApp.entities;
 
-public class Airport<T> {
+public class Airport {
     private Long id;
     private String name;
     private String code;
